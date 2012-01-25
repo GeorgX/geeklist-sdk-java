@@ -11,7 +11,7 @@ import st.geekli.api.type.GeeklistType;
 
 public class ResponseParser {
 
-	public static Object parseObjects(Class targetObjectClass, JSONArray array, boolean relaxed) throws GeeklistApiException
+	public static Object parseObjects(Class<?> targetObjectClass, JSONArray array, boolean relaxed) throws GeeklistApiException
 	{
 		GeeklistType[] result = (GeeklistType[]) Array.newInstance(targetObjectClass, array.length());
 	    
@@ -29,7 +29,7 @@ public class ResponseParser {
 	    return result;
 	  }
 	
-	public static Object parseObject(Class targetObjectClass, JSONObject object, boolean relaxed) throws GeeklistApiException
+	public static Object parseObject(Class<?> targetObjectClass, JSONObject object, boolean relaxed) throws GeeklistApiException
 	{
 		GeeklistType target = createObject(targetObjectClass);
 		JSONArray responseFields = object.names();

@@ -2,6 +2,10 @@ package st.geekli.api;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,8 +27,6 @@ import oauth.signpost.OAuthConsumer;
 import oauth.signpost.OAuthProvider;
 import oauth.signpost.basic.DefaultOAuthConsumer;
 import oauth.signpost.basic.DefaultOAuthProvider;
-import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
-import oauth.signpost.commonshttp.CommonsHttpOAuthProvider;
 import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
@@ -47,7 +49,7 @@ public class GeeklistApi {
 	private String mUserAgent = DEFAULT_USER_AGENT;
 
 	private DefaultHttpClient mClient;
-	private OAuthProvider mOAuthProvider = new CommonsHttpOAuthProvider(
+	private OAuthProvider mOAuthProvider = new DefaultOAuthProvider(
 			"http://sandbox-api.geekli.st/v1/oauth/request_token",
 			"http://sandbox-api.geekli.st/v1/oauth/access_token",
 			"http://sandbox.geekli.st/oauth/authorize"
@@ -63,7 +65,7 @@ public class GeeklistApi {
 	public GeeklistApi(String consumerKey, String consumerSecret, boolean useCallback) {
 		mUseCallback = useCallback;
 		
-		mOAuthConsumer = new CommonsHttpOAuthConsumer(consumerKey, consumerSecret);
+		mOAuthConsumer = new DefaultOAuthConsumer(consumerKey, consumerSecret);
 		mClient = new DefaultHttpClient();
 	}
 	
@@ -106,7 +108,11 @@ public class GeeklistApi {
 	
 	public String authorize(String requestToken) throws GeeklistApiException
 	{
-		JSONObject response = doRequest("http://sandbox.geekli.st/oauth/authorize", HttpMethod.GET, false);
+		try {
+			JSONObject response = doRequest(new URL("http://sandbox.geekli.st/oauth/authorize"), HttpMethod.GET, false);
+		} catch (MalformedURLException e) {
+			throw new GeeklistApiException(e);
+		}
 		return "";
 	}
 	
@@ -258,132 +264,160 @@ public class GeeklistApi {
 		doRequest(buildApiRequestUrl("highfive"), HttpMethod.POST, true);
 	}
 	
-	private JSONObject doRequest(String url, HttpMethod method, boolean sign) throws GeeklistApiException
+	private JSONObject doRequest(URL url, HttpMethod method, boolean sign) throws GeeklistApiException
 	{
-		HttpRequestBase request = null;
-		
-		switch(method)
-		{
-		case GET:
-			request = new HttpGet(url);
-			break;
-		case POST:
-			request = new HttpPost(url);
-			break;
-		}
-
-		if(sign)
-		{
-			try {
-				mOAuthConsumer.sign(request);
-			} catch (OAuthMessageSignerException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (OAuthExpectationFailedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (OAuthCommunicationException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		}
-		
+		HttpURLConnection request = null;
 		try {
-			HttpResponse response = mClient.execute(request);
-			
-			if(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK)
-			{
-				JSONObject responseObject = new JSONObject(Utils.inputStreamToString(response.getEntity().getContent()));
-				
-				if(responseObject.optString("status").equals("ok"))
+			request = (HttpURLConnection)url.openConnection();
+
+			try {
+				switch(method)
 				{
-					return responseObject.optJSONObject("data");
+				case GET:
+					request.setRequestMethod("POST");
+					break;
+				case POST:
+					request.setRequestMethod("POST");
+					break;
+				}
+			} catch (ProtocolException e2) {
+				throw new GeeklistApiException(e2);
+			}
+	
+			request.setRequestProperty("User-Agent", mUserAgent);
+			request.setRequestProperty("Accept-Charset", "UTF-8");
+			
+			if(sign)
+			{
+				try {
+					mOAuthConsumer.sign(request);
+				} catch (OAuthMessageSignerException e1) {
+					throw new GeeklistApiException(e1);
+				} catch (OAuthExpectationFailedException e1) {
+					throw new GeeklistApiException(e1);
+				} catch (OAuthCommunicationException e1) {
+					throw new GeeklistApiException(e1);
+				}
+			}
+			
+			try {
+				request.connect();
+	
+				if(request.getResponseCode() == 200)
+				{
+					JSONObject responseObject = new JSONObject(Utils.inputStreamToString(request.getInputStream()));
+					
+					if(responseObject.optString("status").equals("ok"))
+					{
+						return responseObject.optJSONObject("data");
+					} else {
+						throw new GeeklistApiException(responseObject.optString("error"));
+					}
+					
 				} else {
-					throw new GeeklistApiException(responseObject.optString("error"));
+					throw new GeeklistApiException(request.getResponseMessage(), request.getResponseCode());
 				}
 				
-			} else {
-				// TODO: return something meaningful
-				return null;
+			} catch (ClientProtocolException e) {
+				throw new GeeklistApiException(e);
+			} catch (IOException e) {
+				throw new GeeklistApiException(e);
+			} catch (IllegalStateException e) {
+				throw new GeeklistApiException(e);
+			} catch (JSONException e) {
+				throw new GeeklistApiException(e);
 			}
-			
-		} catch (ClientProtocolException e) {
-			throw new GeeklistApiException(e);
-		} catch (IOException e) {
-			throw new GeeklistApiException(e);
-		} catch (IllegalStateException e) {
-			throw new GeeklistApiException(e);
-		} catch (JSONException e) {
-			throw new GeeklistApiException(e);
+		
+		} catch (IOException e3) {
+			throw new GeeklistApiException(e3);
+		} finally {
+
+		      if(request != null) {
+		    	  request.disconnect(); 
+		      }
 		}
 	}
 	
-	private JSONArray doRequestArray(String url, HttpMethod method, boolean sign) throws GeeklistApiException
+	private JSONArray doRequestArray(URL url, HttpMethod method, boolean sign) throws GeeklistApiException
 	{
-		HttpRequestBase request = null;
-		
-		switch(method)
-		{
-		case GET:
-			request = new HttpGet(url);
-			break;
-		case POST:
-			request = new HttpPost(url);
-			break;
-		}
-
-		if(sign)
-		{
-			try {
-				mOAuthConsumer.sign(request);
-			} catch (OAuthMessageSignerException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (OAuthExpectationFailedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (OAuthCommunicationException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		}
-		
+		HttpURLConnection request = null;
 		try {
-			HttpResponse response = mClient.execute(request);
-			
-			if(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK)
-			{
-				JSONObject responseObject = new JSONObject(Utils.inputStreamToString(response.getEntity().getContent()));
-				
-				if(responseObject.optString("status").equals("ok"))
+			request = (HttpURLConnection)url.openConnection();
+
+			try {
+				switch(method)
 				{
-					return responseObject.optJSONArray("data");
+				case GET:
+					request.setRequestMethod("POST");
+					break;
+				case POST:
+					request.setRequestMethod("POST");
+					break;
+				}
+			} catch (ProtocolException e2) {
+				throw new GeeklistApiException(e2);
+			}
+	
+			request.setRequestProperty("User-Agent", mUserAgent);
+			request.setRequestProperty("Accept-Charset", "UTF-8");
+			
+			if(sign)
+			{
+				try {
+					mOAuthConsumer.sign(request);
+				} catch (OAuthMessageSignerException e1) {
+					throw new GeeklistApiException(e1);
+				} catch (OAuthExpectationFailedException e1) {
+					throw new GeeklistApiException(e1);
+				} catch (OAuthCommunicationException e1) {
+					throw new GeeklistApiException(e1);
+				}
+			}
+			
+			try {
+				request.connect();
+	
+				if(request.getResponseCode() == 200)
+				{
+					JSONObject responseObject = new JSONObject(Utils.inputStreamToString(request.getInputStream()));
+					
+					if(responseObject.optString("status").equals("ok"))
+					{
+						return responseObject.optJSONArray("data");
+					} else {
+						throw new GeeklistApiException(responseObject.optString("error"));
+					}
+					
 				} else {
-					throw new GeeklistApiException(responseObject.optString("error"));
+					throw new GeeklistApiException(request.getResponseMessage(), request.getResponseCode());
 				}
 				
-			} else {
-				// TODO: return something meaningful
-				return null;
+			} catch (ClientProtocolException e) {
+				throw new GeeklistApiException(e);
+			} catch (IOException e) {
+				throw new GeeklistApiException(e);
+			} catch (IllegalStateException e) {
+				throw new GeeklistApiException(e);
+			} catch (JSONException e) {
+				throw new GeeklistApiException(e);
 			}
-			
-		} catch (ClientProtocolException e) {
-			throw new GeeklistApiException(e);
-		} catch (IOException e) {
-			throw new GeeklistApiException(e);
-		} catch (IllegalStateException e) {
-			throw new GeeklistApiException(e);
-		} catch (JSONException e) {
-			throw new GeeklistApiException(e);
+		
+		} catch (IOException e3) {
+			throw new GeeklistApiException(e3);
+		} finally {
+
+		      if(request != null) {
+		    	  request.disconnect(); 
+		      }
 		}
 	}
 	
-	private String buildApiRequestUrl(String path) throws GeeklistApiException
+	private URL buildApiRequestUrl(String path) throws GeeklistApiException
 	{
 		return buildApiRequestUrl(path, new HashMap<String,Object>());
 	}
 	
-	private String buildApiRequestUrl(String path, Map<String, Object> params) throws GeeklistApiException
+	private URL buildApiRequestUrl(String path, Map<String, Object> params) throws GeeklistApiException
 	{
 		StringBuilder sb = new StringBuilder(API_URL);
 		sb.append(mVersion);
@@ -406,7 +440,12 @@ public class GeeklistApi {
 			}
 		}
 	
-		return sb.toString();
+		try {
+			return new URL(sb.toString());
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			throw new GeeklistApiException(e);
+		}
 	}
 	
 	public void setVersion(String version)
