@@ -4,5 +4,34 @@
   <artifactId>geeklist-api</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>geekli.st API</name>
-  <description>Geekli.st API for Java</description>
+  <licenses>
+	<license>
+		<name>Apache License, Version 2.0</name>
+		<url>http://www.apache.org/licenses/LICENSE-2.0</url>
+		<distribution>repo</distribution>
+    </license>
+  </licenses>
+  <dependencies>
+  	<dependency>
+  		<groupId>oauth.signpost</groupId>
+  		<artifactId>signpost-core</artifactId>
+  		<version>1.2.1.1</version>
+  	</dependency>
+	<dependency>
+		<groupId>oauth.signpost</groupId>
+		<artifactId>signpost-commonshttp4</artifactId>
+		<version>1.2.1.1</version>
+	</dependency>
+  	<dependency>
+		<groupId>org.json</groupId>
+		<artifactId>json</artifactId>
+		<version>20090211</version>
+  	</dependency>
+	<dependency>
+		<groupId>com.google.android</groupId>
+		<artifactId>android</artifactId>
+		<version>2.1_r1</version>
+		<scope>provided</scope>
+	</dependency>
+  </dependencies>
 </project>
