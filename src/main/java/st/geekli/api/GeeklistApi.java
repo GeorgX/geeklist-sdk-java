@@ -3,6 +3,7 @@ package st.geekli.api;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,6 +14,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -27,7 +29,10 @@ import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.exception.OAuthNotAuthorizedException;
+import st.geekli.api.type.Activity;
+import st.geekli.api.type.Card;
 import st.geekli.api.type.GeeklistType;
+import st.geekli.api.type.Micro;
 import st.geekli.api.type.MicroType;
 import st.geekli.api.type.User;
 
@@ -126,75 +131,90 @@ public class GeeklistApi {
 		return (User) ResponseParser.parseObject(User.class, response, true);
 	}
 	
-	public void getUser(String username) throws GeeklistApiException
+	public User getUser(String username) throws GeeklistApiException
 	{
-		doRequest(buildApiRequestUrl("users/"+username), HttpMethod.GET, true);
+		JSONObject response = doRequest(buildApiRequestUrl("users/"+username), HttpMethod.GET, true);
+		return (User) ResponseParser.parseObject(User.class, response, true);
 	}
 	
-	public void getCards() throws GeeklistApiException
+	public Card[] getCards() throws GeeklistApiException
 	{
-		doRequest(buildApiRequestUrl("user/cards"), HttpMethod.GET, true);
+		JSONObject response = doRequest(buildApiRequestUrl("user/cards"), HttpMethod.GET, true);
+		return (Card[]) ResponseParser.parseObjects(Card.class, response.optJSONArray("cards"), true);
 	}
 	
-	public void getCards(String username) throws GeeklistApiException
+	public Card[] getCards(String username) throws GeeklistApiException
 	{
-		doRequest(buildApiRequestUrl("users/"+username+"/cards"), HttpMethod.GET, true);
+		JSONObject response = doRequest(buildApiRequestUrl("users/"+username+"/cards"), HttpMethod.GET, true);
+		return (Card[]) ResponseParser.parseObjects(Card.class, response.optJSONArray("cards"), true);
 	}
 	
-	public void getCard(String id) throws GeeklistApiException
+	public Card getCard(String id) throws GeeklistApiException
 	{
-		doRequest(buildApiRequestUrl("cards/"+ id), HttpMethod.GET, true);
+		JSONObject response = doRequest(buildApiRequestUrl("cards/"+ id), HttpMethod.GET, true);
+		return (Card) ResponseParser.parseObject(Card.class, response, true);
 	}
 	
-	public void createCard(String content) throws GeeklistApiException
+	public Card createCard(String headline) throws GeeklistApiException
 	{
-		doRequest(buildApiRequestUrl("cards"), HttpMethod.POST, true);
+		HashMap<String, Object> params = new HashMap<String, Object>();
+		params.put("headline", headline);
+		JSONObject response = doRequest(buildApiRequestUrl("cards", params), HttpMethod.POST, true);
+		return (Card) ResponseParser.parseObject(Card.class, response, true);
 	}
 	
-	public void getMicros() throws GeeklistApiException
+	public Micro[] getMicros() throws GeeklistApiException
 	{
-		doRequest(buildApiRequestUrl("user/micros"), HttpMethod.GET, true);
+		JSONObject response = doRequest(buildApiRequestUrl("user/micros"), HttpMethod.GET, true);
+		return (Micro[]) ResponseParser.parseObjects(Micro.class, response.optJSONArray("micros"), true);
 	}
 	
-	public void getMicros(String username) throws GeeklistApiException
+	public Micro[] getMicros(String username) throws GeeklistApiException
 	{
-		doRequest(buildApiRequestUrl("users/"+username+"/micros"), HttpMethod.GET, true);
+		JSONObject response = doRequest(buildApiRequestUrl("users/"+username+"/micros"), HttpMethod.GET, true);
+		return (Micro[]) ResponseParser.parseObjects(Micro.class, response.optJSONArray("micros"), true);
 	}
 	
-	public void createMicro(String status) throws GeeklistApiException
+	public Micro createMicro(String status) throws GeeklistApiException
 	{
 		HashMap<String, Object> params = new HashMap<String, Object>();
 		params.put("status", status);
-		doRequest(buildApiRequestUrl("micros"), HttpMethod.POST, true);
+		JSONObject response = doRequest(buildApiRequestUrl("micros", params), HttpMethod.POST, true);
+		return (Micro) ResponseParser.parseObject(Micro.class, response, true);
 	}
 	
-	public void createMicro(String status, String inReplyTo, MicroType type) throws GeeklistApiException
+	public Micro createMicro(String status, String inReplyTo, MicroType type) throws GeeklistApiException
 	{
 		HashMap<String, Object> params = new HashMap<String, Object>();
 		params.put("type", type);
 		params.put("in_reply_to", inReplyTo);
 		params.put("status", status);
-		doRequest(buildApiRequestUrl("micros"), HttpMethod.POST, true);
+		JSONObject response = doRequest(buildApiRequestUrl("micros", params), HttpMethod.POST, true);
+		return (Micro) ResponseParser.parseObject(Micro.class, response, true);
 	}
 	
-	public void getFollowers() throws GeeklistApiException
+	public User[] getFollowers() throws GeeklistApiException
 	{
-		doRequest(buildApiRequestUrl("user/followers"), HttpMethod.GET, true);
+		JSONObject response = doRequest(buildApiRequestUrl("user/followers"), HttpMethod.GET, true);
+		return (User[]) ResponseParser.parseObjects(User.class, response.optJSONArray("followers"), true);
 	}
 	
-	public void getFollowers(String username) throws GeeklistApiException
+	public User[] getFollowers(String username) throws GeeklistApiException
 	{
-		doRequest(buildApiRequestUrl("users/"+username+"/followers"), HttpMethod.GET, true);
+		JSONObject response = doRequest(buildApiRequestUrl("users/"+username+"/followers"), HttpMethod.GET, true);
+		return (User[]) ResponseParser.parseObjects(User.class, response.optJSONArray("followers"), true);
 	}
 	
-	public void getFollowing() throws GeeklistApiException
+	public User[] getFollowing() throws GeeklistApiException
 	{
-		doRequest(buildApiRequestUrl("user/following"), HttpMethod.GET, true);
+		JSONObject response = doRequest(buildApiRequestUrl("user/following"), HttpMethod.GET, true);
+		return (User[]) ResponseParser.parseObjects(User.class, response.optJSONArray("following"), true);
 	}
 	
-	public void getFollowing(String username) throws GeeklistApiException
+	public User[] getFollowing(String username) throws GeeklistApiException
 	{
-		doRequest(buildApiRequestUrl("users/"+username+"/following"), HttpMethod.GET, true);
+		JSONObject response = doRequest(buildApiRequestUrl("users/"+username+"/following"), HttpMethod.GET, true);
+		return (User[]) ResponseParser.parseObjects(User.class, response.optJSONArray("following"), true);
 	}
 	
 	public void follow(String username) throws GeeklistApiException
@@ -202,36 +222,41 @@ public class GeeklistApi {
 		HashMap<String, Object> params = new HashMap<String, Object>();
 		params.put("user", username);
 		params.put("follow", "follow");
-		doRequest(buildApiRequestUrl("follow"), HttpMethod.POST, true);
+		doRequest(buildApiRequestUrl("follow", params), HttpMethod.POST, true);
 	}
 	
 	public void unfollow(String username) throws GeeklistApiException
 	{
 		HashMap<String, Object> params = new HashMap<String, Object>();
 		params.put("user", username);
-		doRequest(buildApiRequestUrl("follow"), HttpMethod.POST, true);
+		doRequest(buildApiRequestUrl("follow", params), HttpMethod.POST, true);
 	}
 	
-	public void getActivity() throws GeeklistApiException
+	public Activity[] getActivity() throws GeeklistApiException
 	{
-		doRequest(buildApiRequestUrl("user/activity"), HttpMethod.GET, true);
+		JSONArray response = doRequestArray(buildApiRequestUrl("user/activity"), HttpMethod.GET, true);
+		return (Activity[]) ResponseParser.parseObjects(Activity.class, response, true);
 	}
 	
-	public void getActivity(String username) throws GeeklistApiException
+	public Activity[] getActivity(String username) throws GeeklistApiException
 	{
-		doRequest(buildApiRequestUrl("users/"+username+"/activity"), HttpMethod.GET, true);
+		JSONArray response = doRequestArray(buildApiRequestUrl("users/"+username+"/activity"), HttpMethod.GET, true);
+		return (Activity[]) ResponseParser.parseObjects(Activity.class, response, true);
 	}
 	
-	public void getAllActivity() throws GeeklistApiException
+	public Activity[] getAllActivity() throws GeeklistApiException
 	{
-		doRequest(buildApiRequestUrl("activity"), HttpMethod.GET, true);
+		JSONArray response = doRequestArray(buildApiRequestUrl("activity"), HttpMethod.GET, true);
+		return (Activity[]) ResponseParser.parseObjects(Activity.class, response, true);
 	}
 	
-	public void highfive() throws GeeklistApiException
+	public void highfive(String type, String id) throws GeeklistApiException
 	{
-		
+		HashMap<String, Object> params = new HashMap<String, Object>();
+		params.put("type", type);
+		params.put("gfk", id);
+		doRequest(buildApiRequestUrl("highfive"), HttpMethod.POST, true);
 	}
-	
 	
 	private JSONObject doRequest(String url, HttpMethod method, boolean sign) throws GeeklistApiException
 	{
@@ -273,6 +298,66 @@ public class GeeklistApi {
 				if(responseObject.optString("status").equals("ok"))
 				{
 					return responseObject.optJSONObject("data");
+				} else {
+					throw new GeeklistApiException(responseObject.optString("error"));
+				}
+				
+			} else {
+				// TODO: return something meaningful
+				return null;
+			}
+			
+		} catch (ClientProtocolException e) {
+			throw new GeeklistApiException(e);
+		} catch (IOException e) {
+			throw new GeeklistApiException(e);
+		} catch (IllegalStateException e) {
+			throw new GeeklistApiException(e);
+		} catch (JSONException e) {
+			throw new GeeklistApiException(e);
+		}
+	}
+	
+	private JSONArray doRequestArray(String url, HttpMethod method, boolean sign) throws GeeklistApiException
+	{
+		HttpRequestBase request = null;
+		
+		switch(method)
+		{
+		case GET:
+			request = new HttpGet(url);
+			break;
+		case POST:
+			request = new HttpPost(url);
+			break;
+		}
+
+		if(sign)
+		{
+			try {
+				mOAuthConsumer.sign(request);
+			} catch (OAuthMessageSignerException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (OAuthExpectationFailedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (OAuthCommunicationException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		
+		try {
+			HttpResponse response = mClient.execute(request);
+			
+			if(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK)
+			{
+				JSONObject responseObject = new JSONObject(Utils.inputStreamToString(response.getEntity().getContent()));
+				
+				if(responseObject.optString("status").equals("ok"))
+				{
+					return responseObject.optJSONArray("data");
 				} else {
 					throw new GeeklistApiException(responseObject.optString("error"));
 				}

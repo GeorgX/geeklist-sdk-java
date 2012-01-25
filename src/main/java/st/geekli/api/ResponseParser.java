@@ -4,13 +4,33 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import st.geekli.api.type.GeeklistType;
 
 public class ResponseParser {
 
-	public static Object parseObject(Class targetObjectClass, JSONObject object, boolean relaxed) throws GeeklistApiException {
+	public static Object parseObjects(Class targetObjectClass, JSONArray array, boolean relaxed) throws GeeklistApiException
+	{
+		GeeklistType[] result = (GeeklistType[]) Array.newInstance(targetObjectClass, array.length());
+	    
+	    for (int i = 0, l = array.length(); i < l; i++)
+	    {
+	    	JSONObject jsonObject;
+	    	try {
+	    		jsonObject = array.getJSONObject(i);
+	    		result[i] = (GeeklistType) parseObject(targetObjectClass, jsonObject, relaxed);
+	    	} catch (JSONException e) {
+	    		throw new GeeklistApiException(e);
+	    	}
+	    }
+	    
+	    return result;
+	  }
+	
+	public static Object parseObject(Class targetObjectClass, JSONObject object, boolean relaxed) throws GeeklistApiException
+	{
 		GeeklistType target = createObject(targetObjectClass);
 		JSONArray responseFields = object.names();
 		
