@@ -122,7 +122,9 @@ public class ResponseParser {
 			{
 				return fieldClass.cast(fieldObject);
 			} else {
-				throw new GeeklistApiException("Mismatching source and target class, Source: "+ fieldClass.getSimpleName() + ", Target: "+ fieldObject.getClass().getSimpleName());
+				return null;
+				// TODO: Ignore for now...Geekli.st may response with JSONObject$Null
+				//throw new GeeklistApiException("Mismatching source and target class, Source: "+ fieldClass.getSimpleName() + ", Target: "+ fieldObject.getClass().getSimpleName());
 			}
 			
 		}

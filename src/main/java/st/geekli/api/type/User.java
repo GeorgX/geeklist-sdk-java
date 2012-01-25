@@ -2,8 +2,9 @@ package st.geekli.api.type;
 
 public class User implements GeeklistType {
 
-	private String id, name, screenName, blogLink, location, bio, social, createdAt, updatedAt, activeAt, trendingAt, email;
+	private String id, name, screenName, blogLink, location, bio, createdAt, updatedAt, activeAt, trendingAt, email;
 	private Stats stats;
+	private Social social;
 	private Avatar avatar;
 	private Company company;
 	private Boolean isBeta;
@@ -58,11 +59,11 @@ public class User implements GeeklistType {
 		this.bio = bio;
 	}
 
-	public String getSocial() {
+	public Social getSocial() {
 		return social;
 	}
 
-	public void setSocial(String social) {
+	public void setSocial(Social social) {
 		this.social = social;
 	}
 
