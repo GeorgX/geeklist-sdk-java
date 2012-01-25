@@ -7,21 +7,12 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import oauth.signpost.OAuth;
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.OAuthProvider;
@@ -33,7 +24,6 @@ import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.exception.OAuthNotAuthorizedException;
 import st.geekli.api.type.Activity;
 import st.geekli.api.type.Card;
-import st.geekli.api.type.GeeklistType;
 import st.geekli.api.type.Micro;
 import st.geekli.api.type.MicroType;
 import st.geekli.api.type.User;
@@ -48,7 +38,6 @@ public class GeeklistApi {
 	private String mVersion = VERSION_1;
 	private String mUserAgent = DEFAULT_USER_AGENT;
 
-	private DefaultHttpClient mClient;
 	private OAuthProvider mOAuthProvider = new DefaultOAuthProvider(
 			"http://sandbox-api.geekli.st/v1/oauth/request_token",
 			"http://sandbox-api.geekli.st/v1/oauth/access_token",
@@ -66,7 +55,6 @@ public class GeeklistApi {
 		mUseCallback = useCallback;
 		
 		mOAuthConsumer = new DefaultOAuthConsumer(consumerKey, consumerSecret);
-		mClient = new DefaultHttpClient();
 	}
 	
 	public GeeklistApi(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret, boolean useCallback) {
@@ -109,7 +97,7 @@ public class GeeklistApi {
 	public String authorize(String requestToken) throws GeeklistApiException
 	{
 		try {
-			JSONObject response = doRequest(new URL("http://sandbox.geekli.st/oauth/authorize"), HttpMethod.GET, false);
+			doRequest(new URL("http://sandbox.geekli.st/oauth/authorize"), HttpMethod.GET, false);
 		} catch (MalformedURLException e) {
 			throw new GeeklistApiException(e);
 		}
@@ -443,7 +431,6 @@ public class GeeklistApi {
 		try {
 			return new URL(sb.toString());
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
 			throw new GeeklistApiException(e);
 		}
 	}
