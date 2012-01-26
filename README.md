@@ -2,8 +2,8 @@ Java Library for the geekli.st API
 ==================================
 
 This repository contains the Java Client Library for geekli.st. Please consult
-(http://geekli.st) for more information regarding GeekList. Complete API
-documentation is available at (http://hackers.geekli.st)
+http://geekli.st for more information regarding GeekList. Complete API
+documentation is available at http://hackers.geekli.st
 
 Usage
 -----
