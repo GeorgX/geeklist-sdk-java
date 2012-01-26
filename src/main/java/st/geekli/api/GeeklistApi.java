@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2012 Stefan Hoth, Sebastian Mauer
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package st.geekli.api;
 
 import java.io.DataOutputStream;
@@ -10,6 +26,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.http.HttpResponse;
@@ -141,16 +158,32 @@ public class GeeklistApi {
 		return (User) ResponseParser.parseObject(User.class, response, true);
 	}
 	
+	public Card[] getCards(int page, int count) throws GeeklistApiException
+	{
+		HashMap<String, Object> params = new HashMap<String, Object>();
+		params.put("page", page);
+		params.put("count", count);
+		JSONObject response = doRequest(buildApiRequestUrl("user/cards"), params, HttpMethod.GET, true);
+		return (Card[]) ResponseParser.parseObjects(Card.class, response.optJSONArray("cards"), true);
+	}
+	
 	public Card[] getCards() throws GeeklistApiException
 	{
-		JSONObject response = doRequest(buildApiRequestUrl("user/cards"), HttpMethod.GET, true);
+		return getCards(1, 10);
+	}
+	
+	public Card[] getCards(String username, int page, int count) throws GeeklistApiException
+	{
+		HashMap<String, Object> params = new HashMap<String, Object>();
+		params.put("page", page);
+		params.put("count", count);
+		JSONObject response = doRequest(buildApiRequestUrl("users/"+username+"/cards"), params, HttpMethod.GET, true);
 		return (Card[]) ResponseParser.parseObjects(Card.class, response.optJSONArray("cards"), true);
 	}
 	
 	public Card[] getCards(String username) throws GeeklistApiException
 	{
-		JSONObject response = doRequest(buildApiRequestUrl("users/"+username+"/cards"), HttpMethod.GET, true);
-		return (Card[]) ResponseParser.parseObjects(Card.class, response.optJSONArray("cards"), true);
+		return getCards(username, 1, 10);
 	}
 	
 	public Card getCard(String id) throws GeeklistApiException
@@ -167,16 +200,32 @@ public class GeeklistApi {
 		return (Card) ResponseParser.parseObject(Card.class, response, true);
 	}
 	
+	public Micro[] getMicros(int page, int count) throws GeeklistApiException
+	{
+		HashMap<String, Object> params = new HashMap<String, Object>();
+		params.put("page", page);
+		params.put("count", count);
+		JSONObject response = doRequest(buildApiRequestUrl("user/micros"), params, HttpMethod.GET, true);
+		return (Micro[]) ResponseParser.parseObjects(Micro.class, response.optJSONArray("micros"), true);
+	}
+	
 	public Micro[] getMicros() throws GeeklistApiException
 	{
-		JSONObject response = doRequest(buildApiRequestUrl("user/micros"), HttpMethod.GET, true);
+		return getMicros(1, 10);
+	}
+	
+	public Micro[] getMicros(String username, int page, int count) throws GeeklistApiException
+	{
+		HashMap<String, Object> params = new HashMap<String, Object>();
+		params.put("page", page);
+		params.put("count", count);
+		JSONObject response = doRequest(buildApiRequestUrl("users/"+username+"/micros"), params, HttpMethod.GET, true);
 		return (Micro[]) ResponseParser.parseObjects(Micro.class, response.optJSONArray("micros"), true);
 	}
 	
 	public Micro[] getMicros(String username) throws GeeklistApiException
 	{
-		JSONObject response = doRequest(buildApiRequestUrl("users/"+username+"/micros"), HttpMethod.GET, true);
-		return (Micro[]) ResponseParser.parseObjects(Micro.class, response.optJSONArray("micros"), true);
+		return getMicros(username, 1, 10);
 	}
 	
 	public Micro createMicro(String status) throws GeeklistApiException
@@ -197,35 +246,67 @@ public class GeeklistApi {
 		return (Micro) ResponseParser.parseObject(Micro.class, response, true);
 	}
 	
+	public User[] getFollowers(int page, int count) throws GeeklistApiException
+	{
+		HashMap<String, Object> params = new HashMap<String, Object>();
+		params.put("page", page);
+		params.put("count", count);
+		JSONObject response = doRequest(buildApiRequestUrl("user/followers"), params, HttpMethod.GET, true);
+		return (User[]) ResponseParser.parseObjects(User.class, response.optJSONArray("followers"), true);
+	}
+	
 	public User[] getFollowers() throws GeeklistApiException
 	{
-		JSONObject response = doRequest(buildApiRequestUrl("user/followers"), HttpMethod.GET, true);
+		return getFollowers(1, 10);
+	}
+	
+	public User[] getFollowers(String username, int page, int count) throws GeeklistApiException
+	{
+		HashMap<String, Object> params = new HashMap<String, Object>();
+		params.put("page", page);
+		params.put("count", count);
+		JSONObject response = doRequest(buildApiRequestUrl("users/"+username+"/followers"), params, HttpMethod.GET, true);
 		return (User[]) ResponseParser.parseObjects(User.class, response.optJSONArray("followers"), true);
 	}
 	
 	public User[] getFollowers(String username) throws GeeklistApiException
 	{
-		JSONObject response = doRequest(buildApiRequestUrl("users/"+username+"/followers"), HttpMethod.GET, true);
-		return (User[]) ResponseParser.parseObjects(User.class, response.optJSONArray("followers"), true);
+		return getFollowers(username, 1, 10);
+	}
+	
+	public User[] getFollowing(int page, int count) throws GeeklistApiException
+	{
+		HashMap<String, Object> params = new HashMap<String, Object>();
+		params.put("page", page);
+		params.put("count", count);
+		JSONObject response = doRequest(buildApiRequestUrl("user/following"), params, HttpMethod.GET, true);
+		return (User[]) ResponseParser.parseObjects(User.class, response.optJSONArray("following"), true);
 	}
 	
 	public User[] getFollowing() throws GeeklistApiException
 	{
-		JSONObject response = doRequest(buildApiRequestUrl("user/following"), HttpMethod.GET, true);
+		return getFollowing(1, 10);
+	}
+	
+	public User[] getFollowing(String username, int page, int count) throws GeeklistApiException
+	{
+		HashMap<String, Object> params = new HashMap<String, Object>();
+		params.put("page", page);
+		params.put("count", count);
+		JSONObject response = doRequest(buildApiRequestUrl("users/"+username+"/following"), params, HttpMethod.GET, true);
 		return (User[]) ResponseParser.parseObjects(User.class, response.optJSONArray("following"), true);
 	}
 	
 	public User[] getFollowing(String username) throws GeeklistApiException
 	{
-		JSONObject response = doRequest(buildApiRequestUrl("users/"+username+"/following"), HttpMethod.GET, true);
-		return (User[]) ResponseParser.parseObjects(User.class, response.optJSONArray("following"), true);
+		return getFollowing(username, 1, 10);
 	}
 	
 	public void follow(String username) throws GeeklistApiException
 	{
 		HashMap<String, Object> params = new HashMap<String, Object>();
 		params.put("user", username);
-		params.put("follow", "follow");
+		params.put("action", "follow");
 		doRequest(buildApiRequestUrl("follow"), params, HttpMethod.POST, true);
 	}
 	
@@ -236,22 +317,46 @@ public class GeeklistApi {
 		doRequest(buildApiRequestUrl("follow"), params, HttpMethod.POST, true);
 	}
 	
+	public Activity[] getActivity(int page, int count) throws GeeklistApiException
+	{
+		HashMap<String, Object> params = new HashMap<String, Object>();
+		params.put("page", page);
+		params.put("count", count);
+		JSONArray response = doRequestArray(buildApiRequestUrl("user/activity"), params, HttpMethod.GET, true);
+		return (Activity[]) ResponseParser.parseObjects(Activity.class, response, true);
+	}
+	
 	public Activity[] getActivity() throws GeeklistApiException
 	{
-		JSONArray response = doRequestArray(buildApiRequestUrl("user/activity"), HttpMethod.GET, true);
+		return getActivity(1, 10);
+	}
+	
+	public Activity[] getActivity(String username, int page, int count) throws GeeklistApiException
+	{
+		HashMap<String, Object> params = new HashMap<String, Object>();
+		params.put("page", page);
+		params.put("count", count);
+		JSONArray response = doRequestArray(buildApiRequestUrl("users/"+username+"/activity"), params, HttpMethod.GET, true);
 		return (Activity[]) ResponseParser.parseObjects(Activity.class, response, true);
 	}
 	
 	public Activity[] getActivity(String username) throws GeeklistApiException
 	{
-		JSONArray response = doRequestArray(buildApiRequestUrl("users/"+username+"/activity"), HttpMethod.GET, true);
+		return getActivity(username, 1, 10);
+	}
+	
+	public Activity[] getAllActivity(int page, int count) throws GeeklistApiException
+	{
+		HashMap<String, Object> params = new HashMap<String, Object>();
+		params.put("page", page);
+		params.put("count", count);
+		JSONArray response = doRequestArray(buildApiRequestUrl("activity"), params, HttpMethod.GET, true);
 		return (Activity[]) ResponseParser.parseObjects(Activity.class, response, true);
 	}
 	
 	public Activity[] getAllActivity() throws GeeklistApiException
 	{
-		JSONArray response = doRequestArray(buildApiRequestUrl("activity"), HttpMethod.GET, true);
-		return (Activity[]) ResponseParser.parseObjects(Activity.class, response, true);
+		return getAllActivity(1, 10);
 	}
 	
 	public void highfive(String type, String id) throws GeeklistApiException
@@ -283,13 +388,18 @@ public class GeeklistApi {
 			sb.append(url);
 			if(params.size() > 0)
 			{
-				for(Map.Entry<String, Object> param : params.entrySet())
+				sb.append("?");
+				
+				for (Iterator<Map.Entry<String, Object>> i = params.entrySet().iterator(); i.hasNext(); )
 				{
+					Map.Entry<String, Object> param = i.next();
 					try {
 						sb.append(param.getKey());
 						sb.append('=');
 						sb.append(URLEncoder.encode(param.getValue().toString(),"UTF-8"));
-						sb.append('&');
+						
+						if(i.hasNext())
+							sb.append('&');
 					} catch (UnsupportedEncodingException e) {
 						throw new GeeklistApiException(e);
 					}
@@ -372,6 +482,11 @@ public class GeeklistApi {
 		} catch (JSONException e) {
 				throw new GeeklistApiException(e);
 		}
+	}
+	
+	private JSONArray doRequestArray(String url, HashMap<String,Object> params, HttpMethod method, boolean sign) throws GeeklistApiException
+	{
+		 return (JSONArray)internalDoRequest(url, params, method, sign);
 	}
 	
 	private JSONArray doRequestArray(String url, HttpMethod method, boolean sign) throws GeeklistApiException
