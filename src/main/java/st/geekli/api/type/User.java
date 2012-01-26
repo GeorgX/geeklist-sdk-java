@@ -16,9 +16,11 @@
 
 package st.geekli.api.type;
 
+import java.util.Date;
+
 public class User implements GeeklistType {
 
-	private String id, name, screenName, blogLink, location, bio, createdAt, updatedAt, activeAt, trendingAt, email;
+	private String id, name, screenName, blogLink, location, bio, email;
 	private Stats stats;
 	private Social social;
 	private Avatar avatar;
@@ -26,6 +28,7 @@ public class User implements GeeklistType {
 	private Boolean isBeta;
 	private Boolean isFeatured;
 	private Criteria criteria;
+	private Date createdAt, updatedAt, activeAt, trendingAt;
 	
 	public String getId() {
 		return id;
@@ -83,35 +86,35 @@ public class User implements GeeklistType {
 		this.social = social;
 	}
 
-	public String getCreatedAt() {
+	public Date getCreatedAt() {
 		return createdAt;
 	}
 
-	public void setCreatedAt(String createdAt) {
+	public void setCreatedAt(Date createdAt) {
 		this.createdAt = createdAt;
 	}
 
-	public String getUpdatedAt() {
+	public Date getUpdatedAt() {
 		return updatedAt;
 	}
 
-	public void setUpdatedAt(String updatedAt) {
+	public void setUpdatedAt(Date updatedAt) {
 		this.updatedAt = updatedAt;
 	}
 
-	public String getActiveAt() {
+	public Date getActiveAt() {
 		return activeAt;
 	}
 
-	public void setActiveAt(String activeAt) {
+	public void setActiveAt(Date activeAt) {
 		this.activeAt = activeAt;
 	}
 
-	public String getTrendingAt() {
+	public Date getTrendingAt() {
 		return trendingAt;
 	}
 
-	public void setTrendingAt(String trendingAt) {
+	public void setTrendingAt(Date trendingAt) {
 		this.trendingAt = trendingAt;
 	}
 

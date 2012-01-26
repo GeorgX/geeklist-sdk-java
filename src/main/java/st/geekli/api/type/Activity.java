@@ -16,10 +16,13 @@
 
 package st.geekli.api.type;
 
+import java.util.Date;
+
 public class Activity implements GeeklistType {
 
 	private User user;
-	private String createdAt, updatedAt, type, id;
+	private String type, id;
+	private Date createdAt, updatedAt;
 	
 	public User getUser() {
 		return user;
@@ -29,19 +32,19 @@ public class Activity implements GeeklistType {
 		this.user = user;
 	}
 	
-	public String getUpdatedAt() {
+	public Date getUpdatedAt() {
 		return updatedAt;
 	}
 	
-	public void setUpdatedAt(String updatedAt) {
+	public void setUpdatedAt(Date updatedAt) {
 		this.updatedAt = updatedAt;
 	}
 
-	public String getCreatedAt() {
+	public Date getCreatedAt() {
 		return createdAt;
 	}
 
-	public void setCreatedAt(String createdAt) {
+	public void setCreatedAt(Date createdAt) {
 		this.createdAt = createdAt;
 	}
 

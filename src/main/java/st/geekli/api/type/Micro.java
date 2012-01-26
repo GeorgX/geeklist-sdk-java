@@ -16,13 +16,16 @@
 
 package st.geekli.api.type;
 
+import java.util.Date;
+
 public class Micro implements GeeklistType {
 
 	private ShortCode shortCode;
 	private String[] mentions;
 	private Boolean isTrending, isActive;
-	private String createdAt, updatedAt, trendingAt, status, slug, permalink, id, authorId;
+	private String status, slug, permalink, id, authorId;
 	private MicroReply reply;
+	private Date createdAt, updatedAt, trendingAt;
 	
 	public ShortCode getShortCode() {
 		return shortCode;
@@ -56,27 +59,27 @@ public class Micro implements GeeklistType {
 		this.isActive = isActive;
 	}
 
-	public String getCreatedAt() {
+	public Date getCreatedAt() {
 		return createdAt;
 	}
 
-	public void setCreatedAt(String createdAt) {
+	public void setCreatedAt(Date createdAt) {
 		this.createdAt = createdAt;
 	}
 
-	public String getUpdatedAt() {
+	public Date getUpdatedAt() {
 		return updatedAt;
 	}
 
-	public void setUpdatedAt(String updatedAt) {
+	public void setUpdatedAt(Date updatedAt) {
 		this.updatedAt = updatedAt;
 	}
 
-	public String getTrendingAt() {
+	public Date getTrendingAt() {
 		return trendingAt;
 	}
 
-	public void setTrendingAt(String trendingAt) {
+	public void setTrendingAt(Date trendingAt) {
 		this.trendingAt = trendingAt;
 	}
 

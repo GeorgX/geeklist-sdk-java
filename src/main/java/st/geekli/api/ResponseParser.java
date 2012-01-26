@@ -18,6 +18,9 @@ package st.geekli.api;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -138,6 +141,20 @@ public class ResponseParser {
 			{
 				return fieldClass.cast(fieldObject);
 			} else {
+				
+				if(fieldClass.equals(Date.class))
+				{
+					// 2011-08-21T20:50:50.445Z
+					String rawTime = String.class.cast(fieldObject);
+					rawTime = rawTime.replace("Z", "-0000");
+					SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+					try {
+						return df.parse(rawTime);
+					} catch (ParseException e) {
+						return null;
+					}
+				}
+				
 				return null;
 				// TODO: Ignore for now...Geekli.st may response with JSONObject$Null
 				//throw new GeeklistApiException("Mismatching source and target class, Source: "+ fieldClass.getSimpleName() + ", Target: "+ fieldObject.getClass().getSimpleName());

@@ -16,12 +16,15 @@
 
 package st.geekli.api.type;
 
+import java.util.Date;
+
 public class Card implements GeeklistType {
 
-	private String id, authorId, createdAt, updatedAt, happenedAt, happenedAtType, headline, permalink, slug;
+	private String id, authorId, happenedAtType, headline, permalink, slug;
 	private Boolean isActive;
 	private CardStats stats;
 	private ShortCode shortCode;
+	private Date createdAt, updatedAt, happenedAt;
 	
 	public String getAuthorId() {
 		return authorId;
@@ -31,27 +34,27 @@ public class Card implements GeeklistType {
 		this.authorId = authorId;
 	}
 	
-	public String getCreatedAt() {
+	public Date getCreatedAt() {
 		return createdAt;
 	}
 	
-	public void setCreatedAt(String createdAt) {
+	public void setCreatedAt(Date createdAt) {
 		this.createdAt = createdAt;
 	}
 
-	public String getUpdatedAt() {
+	public Date getUpdatedAt() {
 		return updatedAt;
 	}
 
-	public void setUpdatedAt(String updatedAt) {
+	public void setUpdatedAt(Date updatedAt) {
 		this.updatedAt = updatedAt;
 	}
 
-	public String getHappenedAt() {
+	public Date getHappenedAt() {
 		return happenedAt;
 	}
 
-	public void setHappenedAt(String happenedAt) {
+	public void setHappenedAt(Date happenedAt) {
 		this.happenedAt = happenedAt;
 	}
 
