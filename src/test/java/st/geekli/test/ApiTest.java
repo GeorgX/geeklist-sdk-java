@@ -32,14 +32,14 @@ import st.geekli.api.type.User;
 public class ApiTest {
 
 	// Enter your API credentials here.
-	private static final String CONSUMER_KEY = "<consumerkey>";
-	private static final String CONSUMER_SECRET = "<consumer_secret>";
-	private static final String TOKEN = "<token>";
-	private static final String TOKEN_SECRET = "<token_secret>";
-	
+    private static final String CONSUMER_KEY = "<consumerkey>";
+    private static final String CONSUMER_SECRET = "<consumer_secret>";
+    private static final String TOKEN = "<token>";
+    private static final String TOKEN_SECRET = "<token_secret>";
+
 	// Objects used for testing
-	private static final String EXPECTED_USER = "mauimauer";
-	private static final String OTHER_USER = "stefanhoth";
+	private static final String GKLST_HANDLE_YOU = "stefanhoth";
+	private static final String GKLST_HANDLE_SOMEONE_ELSE = "mauimauer";
 	private static final String FOLLOW_USER = "8eb84d80be1f6fc88c20bf17b6f1e30e088be4d9684be95641c0184e8b2eb063"; //TechWraith
 	private static final String CARD_ID = "434c8603250f97cb28d769a3d882b5633f4624b5f89cd1277ab62b358ac71ab3";
 	private static final String HIGHFIVE_ITEM = "d0df3e63c9cb66f3fb4e0c15d93a003796c97c0c6600c1e86392730d6e50ee89";
@@ -56,7 +56,7 @@ public class ApiTest {
 		try {
 			User myself = client.getUser();
 			assertNotNull("User should not be null...are you using valid OAuth credentials?", myself);
-			assertEquals("API returned wrong username (check EXPECTED USER)",myself.getScreenName(), EXPECTED_USER);
+			assertEquals("API returned wrong username (check EXPECTED USER)",myself.getScreenName(), GKLST_HANDLE_YOU);
 		} catch (GeeklistApiException e) {
 			fail("getUser(myself) failed!");
 		}
@@ -65,9 +65,9 @@ public class ApiTest {
 	@Test public void testGetOtherUser()
 	{
 		try {
-			User otherUser = client.getUser(OTHER_USER);
-			assertNotNull("User should not be null...does OTHER_USER exist?",otherUser);
-			assertEquals("API returned wrong username (check OTHER_USER)", otherUser.getScreenName(), OTHER_USER);
+			User otherUser = client.getUser(GKLST_HANDLE_SOMEONE_ELSE);
+			assertNotNull("User should not be null...does GKLST_HANDLE_SOMEONE_ELSE exist?",otherUser);
+			assertEquals("API returned wrong username (check GKLST_HANDLE_SOMEONE_ELSE)", otherUser.getScreenName(), GKLST_HANDLE_SOMEONE_ELSE);
 		} catch (GeeklistApiException e) {
 			fail("getUser(username) failed!");
 		}
@@ -92,7 +92,7 @@ public class ApiTest {
 	@Test public void testGetOtherCards()
 	{
 		try {
-			Card[] cards = client.getCards(OTHER_USER);
+			Card[] cards = client.getCards(GKLST_HANDLE_SOMEONE_ELSE);
 			assertNotNull("getCards(username) should not return null. We want an empty array?", cards);
 			
 			if(cards.length > 0)
@@ -147,7 +147,7 @@ public class ApiTest {
 	@Test public void testGetOtherMicros()
 	{
 		try {
-			Micro[] micros = client.getMicros(OTHER_USER);
+			Micro[] micros = client.getMicros(GKLST_HANDLE_SOMEONE_ELSE);
 			assertNotNull("getMicros(username) should not return null. We want an empty array?", micros);
 			
 			if(micros.length > 0)
@@ -190,7 +190,7 @@ public class ApiTest {
 	@Test public void testGetOtherFollowers()
 	{
 		try {
-			User[] followers = client.getFollowers(OTHER_USER);
+			User[] followers = client.getFollowers(GKLST_HANDLE_SOMEONE_ELSE);
 			
 			assertNotNull("getFollowers(username) should not return null. We want an empty array?", followers);
 			
@@ -222,7 +222,7 @@ public class ApiTest {
 	@Test public void testGetOtherFollowing()
 	{
 		try {
-			User[] following = client.getFollowing(OTHER_USER);
+			User[] following = client.getFollowing(GKLST_HANDLE_SOMEONE_ELSE);
 			
 			assertNotNull("getFollowing(username) should not return null. We want an empty array?", following);
 			
@@ -234,7 +234,17 @@ public class ApiTest {
 			fail("getFollowing(username) failed!");
 		}
 	}
-	
+
+    @Test public void testUnFollow()
+    {
+
+        try {
+            client.unfollow(FOLLOW_USER);
+        } catch (GeeklistApiException e) {
+            fail("unfollow(username) failed!");
+        }
+    }
+
 	@Test public void testFollow()
 	{
 		try {
@@ -243,17 +253,7 @@ public class ApiTest {
 			fail("follow(username) failed!");
 		}
 	}
-	
-	@Test public void testUnFollow()
-	{
-		
-		try {
-			client.unfollow(FOLLOW_USER);
-		} catch (GeeklistApiException e) {
-			fail("unfollow(username) failed!");
-		}
-	}
-	
+
 	@Test public void testGetActivity()
 	{
 		try {
@@ -273,7 +273,7 @@ public class ApiTest {
 	@Test public void testGetOtherActivity()
 	{
 		try {
-			Activity[] activities = client.getActivity(OTHER_USER);
+			Activity[] activities = client.getActivity(GKLST_HANDLE_SOMEONE_ELSE);
 			
 			assertNotNull("getActivity(username) should not return null. We want an empty array?", activities);
 			
